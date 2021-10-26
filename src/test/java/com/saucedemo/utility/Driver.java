@@ -37,48 +37,42 @@ public class Driver {
             }
             System.out.println("Browser: " + browser);
 
-            if (driver == null) {
 
-                // according to browser type set up driver correctly
-                switch (browser) {
-                    case "remote-chrome":
-                        try {
-                            // assign your grid server address
-                            //91.0.4472.77
-                            String gridAddress = "54.89.232.72";
-                            //54.235.53.73
-                            URL url = new URL("http://" + gridAddress + ":4444/wd/hub");
-                            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-                            desiredCapabilities.setBrowserName("chrome");
-                            driver = new RemoteWebDriver(url, desiredCapabilities);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case "chrome":
-                        WebDriverManager.chromedriver().setup();
-                        driver = new ChromeDriver();
-                        break;
-                    case "firefox":
-                        WebDriverManager.firefoxdriver().setup();
-                        driver = new FirefoxDriver();
-                        break;
-                    // other browsers omitted
-                    default:
-                        driver = null;
-                        System.out.println("UNKNOWN BROWSER TYPE!!! " + browser);
-                }
-                return driver;
-
-
-            } else {
-//            System.out.println("You have it just use existing one");
-
-
+            // according to browser type set up driver correctly
+            switch (browser) {
+                case "remote-chrome":
+                    try {
+                        // assign your grid server address
+                        //91.0.4472.77
+                        String gridAddress = "54.89.232.72";
+                        //54.235.53.73
+                        URL url = new URL("http://" + gridAddress + ":4444/wd/hub");
+                        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+                        desiredCapabilities.setBrowserName("chrome");
+                        driver = new RemoteWebDriver(url, desiredCapabilities);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "chrome":
+                    WebDriverManager.chromedriver().setup();
+                    driver = new ChromeDriver();
+                    break;
+                case "firefox":
+                    WebDriverManager.firefoxdriver().setup();
+                    driver = new FirefoxDriver();
+                    break;
+                // other browsers omitted
+                default:
+                    driver = null;
+                    System.out.println("UNKNOWN BROWSER TYPE!!! " + browser);
             }
 
         }
+
         return driver;
+
+
     }
 
     /**
@@ -94,6 +88,5 @@ public class Driver {
 
 
 
-
-    }
+}
 

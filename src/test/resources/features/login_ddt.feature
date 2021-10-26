@@ -1,3 +1,5 @@
+
+@smoke
 Feature: User login to the app
 
   As a user I should be to login
