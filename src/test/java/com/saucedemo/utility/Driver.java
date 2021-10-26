@@ -4,6 +4,10 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import java.net.URL;
 
 /**
  * We wanted to have a class with that only return Single object
@@ -12,7 +16,9 @@ import org.openqa.selenium.firefox.FirefoxDriver;
  */
 public class Driver {
 
-    private static WebDriver obj ;
+    private static WebDriver driver ;
+
+    static String browser;
 
     private Driver(){ }
 
@@ -20,56 +26,74 @@ public class Driver {
      * Return obj with only one WebDriver instance
      * @return same WebDriver if exists , new one if null
      */
-    public static WebDriver getDriver(){
+    public static WebDriver getDriver() {
         // read the browser type you want to launch from properties file
-        String browserName = ConfigReader.read("browser") ;
-
-        if(obj == null){
-
-            // according to browser type set up driver correctly
-            switch (browserName ){
-                case "chrome" :
-                    WebDriverManager.chromedriver().setup();
-                    obj = new ChromeDriver();
-                    break;
-                case "firefox" :
-                    WebDriverManager.firefoxdriver().setup();
-                    obj = new FirefoxDriver();
-                    break;
-                // other browsers omitted
-                default:
-                    obj = null ;
-                    System.out.println("UNKNOWN BROWSER TYPE!!! " + browserName);
+        // String browserName = ConfigReader.read("browser") ;
+        if (driver == null) {
+            if (System.getProperty("BROWSER") == null) {
+                browser = ConfigReader.read("browser");
+            } else {
+                browser = System.getProperty("BROWSER");
             }
-            return obj ;
+            System.out.println("Browser: " + browser);
+
+            if (driver == null) {
+
+                // according to browser type set up driver correctly
+                switch (browser) {
+                    case "remote-chrome":
+                        try {
+                            // assign your grid server address
+                            //91.0.4472.77
+                            String gridAddress = "54.89.232.72";
+                            //54.235.53.73
+                            URL url = new URL("http://" + gridAddress + ":4444/wd/hub");
+                            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+                            desiredCapabilities.setBrowserName("chrome");
+                            driver = new RemoteWebDriver(url, desiredCapabilities);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "chrome":
+                        WebDriverManager.chromedriver().setup();
+                        driver = new ChromeDriver();
+                        break;
+                    case "firefox":
+                        WebDriverManager.firefoxdriver().setup();
+                        driver = new FirefoxDriver();
+                        break;
+                    // other browsers omitted
+                    default:
+                        driver = null;
+                        System.out.println("UNKNOWN BROWSER TYPE!!! " + browser);
+                }
+                return driver;
 
 
-
-        }else{
+            } else {
 //            System.out.println("You have it just use existing one");
-            return obj ;
+
+
+            }
 
         }
-
+        return driver;
     }
 
     /**
      * Quitting the browser and setting the value of
      * WebDriver instance to null because you can re-use already quitted driver
      */
-    public static void closeBrowser(){
-
-        // check if we have WebDriver instance or not
-        // basically checking if obj is null or not
-        // if not null
-            // quit the browser
-            // make it null , because once quit it can not be used
-        if(obj != null ){
-            obj.quit();
-            // so when ask for it again , it gives us not quited fresh driver
-            obj = null ;
+        public static void closeDriver() {
+            if (driver != null) {
+                driver.quit();
+                driver = null;
+            }
         }
+
+
+
 
     }
 
-}
